@@ -23,9 +23,10 @@ const config: Config = {
           950: '#172554',
         },
         surface: {
-          DEFAULT: '#1a1a2e',
-          light: '#25253e',
-          lighter: '#2d2d4a',
+          DEFAULT: '#0f0f1a',
+          light: '#1a1a2e',
+          lighter: '#25253e',
+          accent: '#2d2d4a',
         },
       },
       aspectRatio: {

@@ -1,7 +1,7 @@
 'use client';
 
 import type { Slide, Theme } from '@/types';
-import { Monitor, MonitorOff, Pencil } from 'lucide-react';
+import { Monitor, MonitorOff, Pencil, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SlidePreviewProps {
@@ -23,7 +23,7 @@ export function SlidePreview({ slide, theme, isLive, onGoLive, onClear, onEdit }
           backgroundPosition: 'center',
         }),
       }
-    : { backgroundColor: '#000000' };
+    : { backgroundColor: '#111' };
 
   const textStyle: React.CSSProperties = theme
     ? {
@@ -38,67 +38,129 @@ export function SlidePreview({ slide, theme, isLive, onGoLive, onClear, onEdit }
     : { color: '#FFFFFF', fontWeight: '700', textAlign: 'center' as const };
 
   return (
-    <div className="bg-surface-light border-t border-white/10 p-4">
-      <div className="flex items-center gap-3 mb-3">
-        <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider flex-1">
-          Preview
-        </h3>
-        <div className="flex gap-2">
+    <div className="bg-surface-light/50 backdrop-blur-sm border-t border-white/[0.06]">
+      {/* Controls bar */}
+      <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.04]">
+        <div className="flex items-center gap-2 flex-1">
+          <div className={cn(
+            'w-2 h-2 rounded-full',
+            isLive ? 'bg-red-500 animate-glow-pulse' : 'bg-white/20'
+          )} />
+          <span className="text-[0.65rem] font-semibold text-white/40 uppercase tracking-[0.12em]">
+            Output
+          </span>
+        </div>
+
+        <div className="flex gap-1.5">
           {slide && onEdit && (
             <button
               onClick={onEdit}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-lighter
-                       text-gray-300 hover:text-white hover:bg-brand-600 text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                       bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06]
+                       text-white/50 hover:text-white text-[0.65rem] font-medium transition-all duration-200"
             >
-              <Pencil className="w-3.5 h-3.5" />
+              <Pencil className="w-3 h-3" />
               Editar
             </button>
           )}
           <button
             onClick={onGoLive}
+            disabled={!slide}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors',
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.65rem] font-semibold transition-all duration-200',
               isLive
-                ? 'bg-red-600 text-white hover:bg-red-700'
-                : 'bg-surface-lighter text-gray-300 hover:bg-brand-600 hover:text-white'
+                ? 'bg-red-500/20 text-red-400 border border-red-500/30 shadow-lg shadow-red-500/10'
+                : 'bg-brand-600/20 text-brand-400 border border-brand-500/30 hover:bg-brand-600/30 hover:shadow-lg hover:shadow-brand-500/10',
+              !slide && 'opacity-30 pointer-events-none'
             )}
           >
-            <Monitor className="w-3.5 h-3.5" />
+            <Zap className="w-3 h-3" />
             {isLive ? 'EN VIVO' : 'Go Live'}
           </button>
           <button
             onClick={onClear}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-lighter
-                     text-gray-400 hover:text-white text-xs font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                     bg-white/[0.04] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20
+                     text-white/40 hover:text-red-400 text-[0.65rem] font-medium transition-all duration-200"
           >
-            <MonitorOff className="w-3.5 h-3.5" />
+            <MonitorOff className="w-3 h-3" />
             Clear
           </button>
         </div>
       </div>
 
-      {/* Preview canvas */}
-      <div
-        className="aspect-slide rounded-lg overflow-hidden flex items-center justify-center max-h-48"
-        style={bgStyle}
-      >
-        {slide ? (
-          <div className="p-6 w-full" style={textStyle}>
-            {slide.content.lines.map((line, i) => (
-              <p key={i} className="text-base md:text-lg lg:text-xl leading-relaxed">
-                {line}
-              </p>
-            ))}
+      {/* Preview area */}
+      <div className="flex gap-4 p-4">
+        {/* Main output preview */}
+        <div className="flex-1">
+          <div
+            className={cn(
+              'aspect-slide rounded-xl overflow-hidden flex items-center justify-center',
+              'border transition-all duration-300',
+              isLive
+                ? 'border-red-500/40 shadow-xl shadow-red-500/10'
+                : slide
+                  ? 'border-white/[0.08] shadow-xl shadow-black/20'
+                  : 'border-white/[0.04]'
+            )}
+            style={bgStyle}
+          >
+            {slide ? (
+              <div className="p-6 w-full animate-fade-in" style={textStyle}>
+                {slide.content.lines.map((line, i) => (
+                  <p key={i} className="text-sm md:text-base lg:text-lg leading-relaxed">
+                    {line}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2 text-white/20">
+                <Monitor className="w-8 h-8" />
+                <p className="text-xs">Selecciona un slide</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <p className="text-gray-600 text-sm">Ningún slide seleccionado</p>
-        )}
-      </div>
 
-      {/* Notes */}
-      {slide?.notes && (
-        <p className="mt-2 text-xs text-gray-500 italic">{slide.notes}</p>
-      )}
+          {/* Notes below preview */}
+          {slide?.notes && (
+            <div className="mt-2 flex items-start gap-1.5 px-1">
+              <span className="text-[0.55rem] font-bold text-amber-400/60 uppercase mt-0.5">Nota:</span>
+              <p className="text-[0.7rem] text-white/40 italic">{slide.notes}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Program output (what's live) indicator */}
+        <div className="hidden lg:flex flex-col gap-2 w-32">
+          <span className="text-[0.55rem] font-semibold text-white/30 uppercase tracking-wider text-center">
+            Program
+          </span>
+          <div className={cn(
+            'aspect-slide rounded-lg overflow-hidden flex items-center justify-center border',
+            isLive
+              ? 'border-red-500/30 bg-red-950/20'
+              : 'border-white/[0.05] bg-black/40'
+          )}>
+            {isLive && slide ? (
+              <div className="p-2 w-full text-center" style={textStyle}>
+                {slide.content.lines.map((line, i) => (
+                  <p key={i} className="text-[0.4rem] leading-tight">
+                    {line}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <MonitorOff className="w-4 h-4 text-white/10" />
+            )}
+          </div>
+          {isLive && (
+            <div className="flex items-center justify-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-glow-pulse" />
+              <span className="text-[0.55rem] font-bold text-red-400">ON AIR</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -74,8 +74,16 @@ export function EditorLayout({ service: initialService, themes }: EditorLayoutPr
     }));
   }, []);
 
+  const sectionLabels: Record<string, string> = {
+    song: 'Cancion',
+    scripture: 'Escritura',
+    announcement: 'Anuncio',
+    media: 'Media',
+    custom: 'Personalizado',
+  };
+
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden bg-surface">
       <EditorToolbar serviceTitle={service.title} isConnected={true} />
 
       <div className="flex-1 flex overflow-hidden">
@@ -90,17 +98,24 @@ export function EditorLayout({ service: initialService, themes }: EditorLayoutPr
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Section header */}
           {activeSection && (
-            <div className="px-4 py-3 border-b border-white/10 bg-surface">
-              <h2 className="text-lg font-semibold">{activeSection.title}</h2>
-              <p className="text-xs text-gray-500 mt-0.5">
-                {activeSection.type === 'song' && '🎵 Canción'}
-                {activeSection.type === 'scripture' && '📖 Escritura'}
-                {activeSection.type === 'announcement' && '📢 Anuncio'}
-                {activeSection.type === 'media' && '🎬 Media'}
-                {activeSection.type === 'custom' && '📄 Personalizado'}
-                {' · '}
-                {activeSection.slides.length} slide{activeSection.slides.length !== 1 ? 's' : ''}
-              </p>
+            <div className="px-5 py-3 border-b border-white/[0.06] bg-surface/80 backdrop-blur-sm flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-sm font-semibold text-white/90 truncate">{activeSection.title}</h2>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[0.6rem] font-medium text-white/30 uppercase tracking-wider">
+                    {sectionLabels[activeSection.type] || activeSection.type}
+                  </span>
+                  <span className="w-1 h-1 rounded-full bg-white/20" />
+                  <span className="text-[0.6rem] text-white/30">
+                    {activeSection.slides.length} slide{activeSection.slides.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+              {activeSlideId && (
+                <span className="text-[0.6rem] font-mono text-white/20 bg-white/5 px-2 py-1 rounded-md">
+                  {(activeSection.slides.findIndex(s => s.id === activeSlideId) + 1) || '-'} / {activeSection.slides.length}
+                </span>
+              )}
             </div>
           )}
 
