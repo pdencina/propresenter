@@ -90,73 +90,73 @@ export function SlidePreview({ slide, theme, isLive, onGoLive, onClear, onEdit }
       </div>
 
       {/* Preview area */}
-      <div className="flex gap-4 p-4">
+      <div className="flex gap-3 px-4 py-3 items-start">
         {/* Main output preview */}
-        <div className="flex-1">
+        <div className="flex-1 max-w-md">
           <div
             className={cn(
-              'aspect-slide rounded-xl overflow-hidden flex items-center justify-center',
+              'aspect-slide max-h-32 rounded-lg overflow-hidden flex items-center justify-center',
               'border transition-all duration-300',
               isLive
-                ? 'border-red-500/40 shadow-xl shadow-red-500/10'
+                ? 'border-red-500/40 shadow-lg shadow-red-500/10'
                 : slide
-                  ? 'border-white/[0.08] shadow-xl shadow-black/20'
+                  ? 'border-white/[0.08] shadow-lg shadow-black/20'
                   : 'border-white/[0.04]'
             )}
             style={bgStyle}
           >
             {slide ? (
-              <div className="p-6 w-full animate-fade-in" style={textStyle}>
+              <div className="p-4 w-full animate-fade-in" style={textStyle}>
                 {slide.content.lines.map((line, i) => (
-                  <p key={i} className="text-sm md:text-base lg:text-lg leading-relaxed">
+                  <p key={i} className="text-xs md:text-sm leading-snug">
                     {line}
                   </p>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-2 text-white/20">
-                <Monitor className="w-8 h-8" />
-                <p className="text-xs">Selecciona un slide</p>
+              <div className="flex flex-col items-center gap-1.5 text-white/20">
+                <Monitor className="w-5 h-5" />
+                <p className="text-[0.6rem]">Selecciona un slide</p>
               </div>
             )}
           </div>
 
           {/* Notes below preview */}
           {slide?.notes && (
-            <div className="mt-2 flex items-start gap-1.5 px-1">
+            <div className="mt-1.5 flex items-start gap-1.5 px-1">
               <span className="text-[0.55rem] font-bold text-amber-400/60 uppercase mt-0.5">Nota:</span>
-              <p className="text-[0.7rem] text-white/40 italic">{slide.notes}</p>
+              <p className="text-[0.6rem] text-white/40 italic">{slide.notes}</p>
             </div>
           )}
         </div>
 
         {/* Program output (what's live) indicator */}
-        <div className="hidden lg:flex flex-col gap-2 w-32">
+        <div className="hidden lg:flex flex-col gap-1.5 w-28">
           <span className="text-[0.55rem] font-semibold text-white/30 uppercase tracking-wider text-center">
             Program
           </span>
           <div className={cn(
-            'aspect-slide rounded-lg overflow-hidden flex items-center justify-center border',
+            'aspect-slide max-h-16 rounded-md overflow-hidden flex items-center justify-center border',
             isLive
               ? 'border-red-500/30 bg-red-950/20'
               : 'border-white/[0.05] bg-black/40'
           )}>
             {isLive && slide ? (
-              <div className="p-2 w-full text-center" style={textStyle}>
+              <div className="p-1.5 w-full text-center" style={textStyle}>
                 {slide.content.lines.map((line, i) => (
-                  <p key={i} className="text-[0.4rem] leading-tight">
+                  <p key={i} className="text-[0.35rem] leading-tight">
                     {line}
                   </p>
                 ))}
               </div>
             ) : (
-              <MonitorOff className="w-4 h-4 text-white/10" />
+              <MonitorOff className="w-3.5 h-3.5 text-white/10" />
             )}
           </div>
           {isLive && (
             <div className="flex items-center justify-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-glow-pulse" />
-              <span className="text-[0.55rem] font-bold text-red-400">ON AIR</span>
+              <span className="text-[0.5rem] font-bold text-red-400">ON AIR</span>
             </div>
           )}
         </div>
