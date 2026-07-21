@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { Service, Slide, Theme } from '@/types';
 import { ServiceSidebar } from './ServiceSidebar';
 import { SlideGrid } from './SlideGrid';
 import { SlidePreview } from './SlidePreview';
 import { SlideEditor } from './SlideEditor';
+import { ThemeEditor } from './ThemeEditor';
+import { SettingsPanel } from './SettingsPanel';
 import { EditorToolbar } from './EditorToolbar';
 
 interface EditorLayoutProps {
@@ -13,14 +15,19 @@ interface EditorLayoutProps {
   themes: Theme[];
 }
 
-export function EditorLayout({ service: initialService, themes }: EditorLayoutProps) {
+export function EditorLayout({ service: initialService, themes: initialThemes }: EditorLayoutProps) {
   const [service, setService] = useState(initialService);
+  const [themes, setThemes] = useState(initialThemes);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(
     service.sections[0]?.id || null
   );
   const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
   const [liveSlideId, setLiveSlideId] = useState<string | null>(null);
-  const [editingSlide, setEditingSlide] = useState<boolean>(false);
+  const [editingSlide, setEditingSlide] = useState(false);
+  const [showThemeEditor, setShowThemeEditor] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [gridColumns, setGridColumns] = useState(4);
 
   const activeSection = useMemo(
     () => service.sections.find((s) => s.id === activeSectionId) || null,
@@ -36,6 +43,32 @@ export function EditorLayout({ service: initialService, themes }: EditorLayoutPr
     () => themes.find((t) => t.id === activeSlide?.theme_id) || themes.find((t) => t.is_default),
     [themes, activeSlide?.theme_id]
   );
+
+  // Fullscreen handling
+  useEffect(() => {
+    const handleFSChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFSChange);
+    return () => document.removeEventListener('fullscreenchange', handleFSChange);
+  }, []);
+
+  const toggleFullscreen = useCallback(async () => {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+    } else {
+      await document.exitFullscreen();
+    }
+  }, []);
+
+  const cycleGridColumns = useCallback(() => {
+    setGridColumns((prev) => {
+      if (prev === 3) return 4;
+      if (prev === 4) return 5;
+      if (prev === 5) return 6;
+      return 3;
+    });
+  }, []);
 
   const handleSectionSelect = (sectionId: string) => {
     setActiveSectionId(sectionId);
@@ -74,6 +107,23 @@ export function EditorLayout({ service: initialService, themes }: EditorLayoutPr
     }));
   }, []);
 
+  const handleThemeSave = useCallback((themeData: Omit<Theme, 'id'> & { id?: string }) => {
+    if (themeData.id) {
+      // Update existing theme
+      setThemes((prev) =>
+        prev.map((t) => (t.id === themeData.id ? { ...t, ...themeData } as Theme : t))
+      );
+    } else {
+      // Create new theme
+      const newTheme: Theme = {
+        ...themeData,
+        id: `theme-${Date.now()}`,
+      };
+      setThemes((prev) => [...prev, newTheme]);
+    }
+    setShowThemeEditor(false);
+  }, []);
+
   const sectionLabels: Record<string, string> = {
     song: 'Cancion',
     scripture: 'Escritura',
@@ -84,7 +134,16 @@ export function EditorLayout({ service: initialService, themes }: EditorLayoutPr
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-surface">
-      <EditorToolbar serviceTitle={service.title} isConnected={true} />
+      <EditorToolbar
+        serviceTitle={service.title}
+        isConnected={true}
+        onThemesClick={() => setShowThemeEditor(true)}
+        onLayoutClick={cycleGridColumns}
+        onFullscreenClick={toggleFullscreen}
+        onSettingsClick={() => setShowSettings(true)}
+        isFullscreen={isFullscreen}
+        gridColumns={gridColumns}
+      />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
@@ -127,6 +186,7 @@ export function EditorLayout({ service: initialService, themes }: EditorLayoutPr
             liveSlideId={liveSlideId}
             onSlideSelect={handleSlideSelect}
             onSlideDoubleClick={handleSlideDoubleClick}
+            gridColumns={gridColumns}
           />
 
           {/* Preview panel */}
@@ -149,6 +209,22 @@ export function EditorLayout({ service: initialService, themes }: EditorLayoutPr
           currentTheme={activeTheme}
           onSlideUpdate={handleSlideUpdate}
           onClose={() => setEditingSlide(false)}
+        />
+      )}
+
+      {/* Theme editor modal */}
+      {showThemeEditor && (
+        <ThemeEditor
+          onSave={handleThemeSave}
+          onClose={() => setShowThemeEditor(false)}
+        />
+      )}
+
+      {/* Settings panel */}
+      {showSettings && (
+        <SettingsPanel
+          serviceTitle={service.title}
+          onClose={() => setShowSettings(false)}
         />
       )}
     </div>

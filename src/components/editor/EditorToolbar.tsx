@@ -1,15 +1,30 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, Palette, Layout, Maximize, Wifi, Radio, Clock } from 'lucide-react';
+import { Settings, Palette, LayoutGrid, Maximize, Minimize, Radio, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface EditorToolbarProps {
   serviceTitle: string;
   isConnected: boolean;
+  onThemesClick: () => void;
+  onLayoutClick: () => void;
+  onFullscreenClick: () => void;
+  onSettingsClick: () => void;
+  isFullscreen: boolean;
+  gridColumns: number;
 }
 
-export function EditorToolbar({ serviceTitle, isConnected }: EditorToolbarProps) {
+export function EditorToolbar({
+  serviceTitle,
+  isConnected,
+  onThemesClick,
+  onLayoutClick,
+  onFullscreenClick,
+  onSettingsClick,
+  isFullscreen,
+  gridColumns,
+}: EditorToolbarProps) {
   const [time, setTime] = useState('');
 
   useEffect(() => {
@@ -67,21 +82,41 @@ export function EditorToolbar({ serviceTitle, isConnected }: EditorToolbarProps)
 
       {/* Action buttons */}
       <div className="flex items-center gap-0.5">
-        {[
-          { icon: Palette, label: 'Temas' },
-          { icon: Layout, label: 'Layout' },
-          { icon: Maximize, label: 'Fullscreen' },
-          { icon: Settings, label: 'Config' },
-        ].map(({ icon: Icon, label }) => (
-          <button
-            key={label}
-            className="p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white/80 transition-all duration-200"
-            aria-label={label}
-            title={label}
-          >
-            <Icon className="w-4 h-4" />
-          </button>
-        ))}
+        <button
+          onClick={onThemesClick}
+          className="p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white/80 transition-all duration-200"
+          aria-label="Temas"
+          title="Temas"
+        >
+          <Palette className="w-4 h-4" />
+        </button>
+        <button
+          onClick={onLayoutClick}
+          className="p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white/80 transition-all duration-200 relative"
+          aria-label={`Layout: ${gridColumns} columnas`}
+          title={`Layout: ${gridColumns} columnas`}
+        >
+          <LayoutGrid className="w-4 h-4" />
+          <span className="absolute -bottom-0.5 -right-0.5 text-[0.45rem] font-bold text-brand-400 bg-surface rounded px-0.5">
+            {gridColumns}
+          </span>
+        </button>
+        <button
+          onClick={onFullscreenClick}
+          className="p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white/80 transition-all duration-200"
+          aria-label={isFullscreen ? 'Salir de fullscreen' : 'Fullscreen'}
+          title={isFullscreen ? 'Salir de fullscreen' : 'Fullscreen'}
+        >
+          {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+        </button>
+        <button
+          onClick={onSettingsClick}
+          className="p-2 rounded-lg hover:bg-white/[0.06] text-white/40 hover:text-white/80 transition-all duration-200"
+          aria-label="Configuración"
+          title="Configuración"
+        >
+          <Settings className="w-4 h-4" />
+        </button>
       </div>
     </header>
   );

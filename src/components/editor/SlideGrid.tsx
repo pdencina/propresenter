@@ -11,6 +11,7 @@ interface SlideGridProps {
   liveSlideId: string | null;
   onSlideSelect: (slideId: string) => void;
   onSlideDoubleClick?: () => void;
+  gridColumns?: number;
 }
 
 export function SlideGrid({
@@ -20,6 +21,7 @@ export function SlideGrid({
   liveSlideId,
   onSlideSelect,
   onSlideDoubleClick,
+  gridColumns = 4,
 }: SlideGridProps) {
   const getTheme = (themeId: string | null) =>
     themes.find((t) => t.id === themeId);
@@ -33,9 +35,18 @@ export function SlideGrid({
     );
   }
 
+  const gridClass =
+    gridColumns === 3
+      ? 'grid-cols-2 sm:grid-cols-3'
+      : gridColumns === 5
+        ? 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-5'
+        : gridColumns === 6
+          ? 'grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
+          : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4';
+
   return (
     <div className="flex-1 overflow-y-auto p-5">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className={`grid ${gridClass} gap-4`}>
         {slides.map((slide, index) => (
           <SlideCard
             key={slide.id}
