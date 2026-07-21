@@ -14,13 +14,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'ProPresenter Clone',
-  description: 'Professional church presentation software',
+  title: 'PasaLaLetra',
+  description: 'Software de presentaciones para iglesias',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'ProPresenter',
+    title: 'PasaLaLetra',
   },
 };
 

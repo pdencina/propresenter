@@ -1,6 +1,6 @@
 {
-  "name": "ProPresenter Remote",
-  "short_name": "Remote",
+  "name": "PasaLaLetra Remote",
+  "short_name": "PasaLaLetra",
   "description": "Control remoto para presentaciones en vivo",
   "start_url": "/remote/demo",
   "display": "standalone",

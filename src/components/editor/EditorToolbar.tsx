@@ -31,7 +31,7 @@ export function EditorToolbar({ serviceTitle, isConnected }: EditorToolbarProps)
           <Radio className="w-3.5 h-3.5 text-white" />
         </div>
         <span className="text-xs font-bold text-white/90 tracking-wide uppercase hidden sm:block">
-          ProPresenter
+          PasaLaLetra
         </span>
       </div>
 

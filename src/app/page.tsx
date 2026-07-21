@@ -10,10 +10,10 @@ export default function Home() {
           <Radio className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-          ProPresenter
+          PasaLaLetra
         </h1>
         <p className="text-white/40 text-base max-w-md mx-auto">
-          Software profesional de presentaciones para iglesias. Edita, presenta y controla en tiempo real.
+          Software de presentaciones para iglesias. Edita, presenta y controla en tiempo real.
         </p>
       </div>
 
